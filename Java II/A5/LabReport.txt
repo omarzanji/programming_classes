@@ -1,0 +1,49 @@
+% A5 Lab Report
+% Omar Barazanji
+% 10/30/17
+
+# Benchmarking the ArrayStrand implementation
+
+## Show that ArrayStrand.cutAndSplice() is O(N)
+
+Problem Size | Time | R | k |
+...
+7. 16,384 | 0.079 | 1.274 | 0.349 |
+8. 32,768 | 0.171 | 2.165 | 1.114 |
+9. 65,536 | 0.224 | 1.310 | 0.389 |
+10. 131,072 | 0.516 | 2.304 | 1.204 |
+11. 262,144 | 0.841 | 1.630 | 0.704 |
+
+It appears that k is hanging around 1, so O(N^k) = O(N) 
+
+## Determine the largest power-of-two splice supported with 512M heap
+32,768 splice length before memory crash (2^.
+
+## Determine the largest power-of-two splice supported with 1024M heap
+131,072 splice length before memory crash.
+
+## Determine the largest power-of-two splice supported as heap doubles
+1,048,576 was the largest splice size my compter could handle. I was abe to go up to 8G heap size.
+
+
+# Verifying the LinkedStrand implementation
+
+## Show that LinkedStrand.cutAndSplice() is O(1)
+Problem Size | Time | R | k |
+...
+7. 16,384 | 1.401 | ~1 | ~0 |
+8. 32,768 | 1.390 | ~1 | ~0 |
+9. 65,536 | 1.376 | ~1 | ~0 |
+10. 131,072 | 1.376 | ~1 | ~0 |
+11. 262,144 | 1.371 | ~1 | ~0 |
+
+It appears k is hanging around 0, so O(N^k) is O(1).
+
+## Determine the largest power-of-two splice supported with 512M heap
+67,108,864 splice length before memory crash.
+
+## Determine the largest power-of-two splice supported with 1024M heap
+134,217,728 splice length before memory crash.
+
+## Determine the largest power-of-two splice supported as heap doubles
+1,073,741,824 
