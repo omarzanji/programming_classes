@@ -1,2 +1,2 @@
 # programming_classes
-All the code I learned Auburn University!
+All the code I learned at Auburn University!
