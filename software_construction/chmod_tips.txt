@@ -1,0 +1,11 @@
+To add permissions to a Linux folder so that only you can access it:
+
+1) navigate to list of all users
+
+2) type:
+	chmod go-rwx 'user_name_here'
+
+3) to view permissions, in the list of all users' directory type:
+	ls -l | grep 'user_name_here'
+
+done.

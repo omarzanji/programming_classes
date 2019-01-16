@@ -36,3 +36,4 @@ float calculateSD(float data[])
 
     return sqrt(standardDeviation / 10);
 }
+
