@@ -10,7 +10,15 @@ using namespace std;
 
 int main()
 {
-	cout << "This is a test!" << "\n";
+	int i, n, factorial = 1;
+	cout << "Enter a positive integer: ";
+	cin >> n;
+
+	for (i = 1; i <= n; ++i) {
+		factorial *= i;
+	}
+	cout << "Factorial of " << n << " = " << factorial;
+	cout << endl;
 	return 0;
 }
 
