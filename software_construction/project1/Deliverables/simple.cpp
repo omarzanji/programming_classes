@@ -6,19 +6,44 @@
 // Date: 1/17/2019
 
 #include <iostream>
+#include <array>
 using namespace std;
 
-int main()
-{
-	int i, n, factorial = 1;
-	cout << "Enter a positive integer: ";
-	cin >> n;
+// float calculateSD(float data[]);
 
+int main() {
+	int i, n, factorial = 1;
+
+	cout << "How many numbers (max: 10) would you like to input? ";
+	cin >> n;
+	float data[n];
+
+	cout << "Enter " << n << " numbers separated by space: ";
+	for (i = 0; i < n; ++i) {
+		cin >> data[i];
+	}
+	
 	for (i = 1; i <= n; ++i) {
 		factorial *= i;
 	}
+
 	cout << "Factorial of " << n << " = " << factorial;
 	cout << endl;
 	return 0;
 }
+
+/*
+float calculateSD(float data[]) {
+	float sum = 0.0, mean, standardDeviation = 0.0;
+
+	int i;
+
+	for (i = 0; i < 10; ++i) {
+		sum += data[i];
+	}
+
+	mean = sum/10;
+}
+*/
+
 
