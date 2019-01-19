@@ -6,7 +6,7 @@
 // Date: 1/17/2019
 
 #include <iostream>
-#include <array>
+//#include <array>
 using namespace std;
 
 // float calculateSD(float data[]);
