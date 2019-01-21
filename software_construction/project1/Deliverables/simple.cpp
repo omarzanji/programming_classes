@@ -3,7 +3,7 @@
 // (2) the value of standard deviation.
 //
 // Author: Omar Barazanji
-// Date: 1/17/2019
+// Date: 1/23/2019
 
 #include <iostream>
 #include <cmath>
