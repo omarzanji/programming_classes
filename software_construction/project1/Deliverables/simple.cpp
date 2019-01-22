@@ -9,17 +9,25 @@
 #include <cmath>
 using namespace std;
 
-float calculateSD(float data[]);
+float calculateSD(float data[], int n);
 
 int main() {
 	int i, n, factorial = 1;
 	int deviation;
+	bool err = true;
 
-	cout << "How many numbers (max: 10) would you like to input? ";
-	cin >> n;
+	while (err == true) {
+		cout << "How many numbers (max: 10) would you like to input? ";
+		cin >> n;
+		if (n > 10 || n < 0) {
+			err = true;
+			cout << "Please enter a number from 0 to 10..." << endl;
+		} else {
+			err = false;
+		}
+	}
 
 	float data[n];
-
 	cout << "Enter " << n << " numbers separated by space: ";
 	for (i = 0; i < n; ++i) {
 		cin >> data[i];
@@ -32,24 +40,24 @@ int main() {
 	cout << "Factorial of " << n << " = " << factorial;
 	cout << endl;
 
-	cout << "Standard deviation: " << calculateSD(data) << endl;
+	cout << "Standard deviation: " << calculateSD(data, n) << endl;
 	return 0;
 }
 
-float calculateSD(float data[]) {
+float calculateSD(float data[], int n) {
 	float sum = 0.0, mean, standardDeviation = 0.0;
 
 	int i;
 
-	for (i = 0; i < 10; ++i) {
+	for (i = 0; i < n; ++i) {
 		sum += data[i];
 	}
 
-	mean = sum/10;
+	mean = sum/n;
 
-	for (i = 0; i < 10; ++i) {
+	for (i = 0; i < n; ++i) {
 		standardDeviation += pow(data[i] - mean, 2);
 	}
 
-	return sqrt(standardDeviation / 10);
+	return sqrt(standardDeviation / n);
 }
