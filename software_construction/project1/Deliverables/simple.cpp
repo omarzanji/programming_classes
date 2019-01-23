@@ -21,7 +21,7 @@ int main() {
 		cin >> n;
 		if (n > 10 || n < 0) {
 			err = true;
-			cout << "Please enter a number from 0 to 9..." << endl;
+			cout << "Please enter a number from 0 to 10..." << endl;
 		} else {
 			err = false;
 		}
