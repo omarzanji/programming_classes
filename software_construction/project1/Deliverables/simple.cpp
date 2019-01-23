@@ -17,11 +17,11 @@ int main() {
 	bool err = true;
 
 	while (err == true) {
-		cout << "How many numbers (max: 10) would you like to input? ";
+		cout << "How many numbers (max 10) would you like to input? ";
 		cin >> n;
 		if (n > 10 || n < 0) {
 			err = true;
-			cout << "Please enter a number from 0 to 10..." << endl;
+			cout << "Please enter a number from 0 to 9..." << endl;
 		} else {
 			err = false;
 		}
