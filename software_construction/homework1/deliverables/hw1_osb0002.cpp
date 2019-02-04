@@ -1,7 +1,13 @@
 // Homework 1 assignment.
+// Calculates fatal amount of diet coke!
 //
 // Author: Omar Barazanji
+// AU_ID: osb0002
+// File_Name: hw1_osb0002.cpp
 // Date: 1/28/2019
+//
+// No outisde sources (other than lecture notes) were used in the making
+// of this program.
 
 #include <iostream>
 using namespace std;
