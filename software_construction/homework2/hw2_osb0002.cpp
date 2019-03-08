@@ -46,7 +46,7 @@ int main()
 
     cout.precision(2);
 
-    // While loop and switch statement for Amortization Table
+    // While loop for Amortization Table
     while (whileLoop) {
         if (monthCnt == 0) {
             cout << fixed << monthCnt << "\t" << "$" << balance << "\t" << "N/A"
@@ -61,7 +61,7 @@ int main()
             balance = 0.0;
             cout << monthCnt << "\t" << "$" << balance << "\t\t"
                  << "$" << monthlyPmt << "\t";
-            cout << noshowpoint << rateMonth*100 
+            cout << noshowpoint << rateMonth*100
                  << "\t" << "$" << interest << "\t\t"
                  << "$" << principle << endl;
             interestTot += interest;
