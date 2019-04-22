@@ -19,7 +19,7 @@ struct TriviaNode {
     TriviaNode *next;
 };
 
-void insert_node(string question, string answer, int points, TriviaNode *head);
+void insert_node(string question, string answer, int points, TriviaNode *&head);
 /*
 *   function insert_node inserts question, answer, and points into a
 *       linked list.
@@ -46,8 +46,11 @@ int main() {
     points = 20;
     insert_node(ques, ans, points, head);
 
-    cout << head->question << endl;
-
+    TriviaNode *current = head;
+    while (current->next != NULL) {
+        current = current->next;
+        cout << current->question << endl;
+    }
 
     return 0;
 
@@ -57,26 +60,23 @@ int main() {
 /****Functions****/
 /*****************/
 
-void insert_node(string question, string answer, int points, TriviaNode *head){
+void insert_node(string question, string answer, int points, TriviaNode *&head) {
     TriviaNode *current = head;
     TriviaNode *temp = new TriviaNode;
 
     temp->question = question;
     temp->answer = answer;
     temp->points = points;
+    //temp->next = NULL;
 
-    bool athead = true;
-    while (current != NULL) {
-      current = current->next;
-      cout << "hello" << endl;
-      athead = false;
-    }
-
-    if (athead) {
-      current = current->next;
-      head = temp;
+    if (head->next == NULL) {
+        temp->next = head->next;
+        head->next = temp;
     } else {
-      temp->next = current;
-      current = temp;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        temp->next = current->next;
+        current->next = temp;
     }
 }
