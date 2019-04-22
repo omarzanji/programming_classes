@@ -4,7 +4,7 @@
 *   Author: Omar Barazanji (osb0002)
 *   Due: 4/26/19
 *
-*   Sources:    1) class lecture / notes...
+*   Sources: class lecture / notes...
 */
 
 #include <iostream>
@@ -46,6 +46,9 @@ int main() {
     points = 20;
     insert_node(ques, ans, points, head);
 
+    cout << head->question << endl;
+
+
     return 0;
 
 }
@@ -58,12 +61,22 @@ void insert_node(string question, string answer, int points, TriviaNode *head){
     TriviaNode *current = head;
     TriviaNode *temp = new TriviaNode;
 
-    while (!(current->next == NULL)) {
-        current = current->next;
-    }
-
     temp->question = question;
     temp->answer = answer;
     temp->points = points;
-    current->next = temp;
+
+    bool athead = true;
+    while (current != NULL) {
+      current = current->next;
+      cout << "hello" << endl;
+      athead = false;
+    }
+
+    if (athead) {
+      current = current->next;
+      head = temp;
+    } else {
+      temp->next = current;
+      current = temp;
+    }
 }
