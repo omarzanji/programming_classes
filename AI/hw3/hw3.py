@@ -188,8 +188,12 @@ class Board:
 
 
 if __name__ == "__main__":
-    Board = Board(100)
+    Board = Board(25)
     Board.generate()
+    print("")
+    print("original board:")
     Board.print_board(Board.board)
+    print("")
+    print("solving... please be patient!")
     print("")
     Board.hill_climbing()
