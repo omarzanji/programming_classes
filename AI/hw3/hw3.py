@@ -6,7 +6,7 @@ class: COMP 5660 (Auburn University)
 """
 
 import random
-
+import numpy as np
 # State is a 1D array, length N, that for each index/column, i, it tells 
 # us what row to place the queen.
 
@@ -164,6 +164,8 @@ class Board:
 
     def hill_climbing(self):
         N = self.N
+
+        # initialize neighbor to current state
         self.neighbor_state = [0]*N
         for i,x in enumerate(self.state):
             self.neighbor_state[i] = x
@@ -171,6 +173,9 @@ class Board:
 
 
         while(True):
+
+            # Always set current state to neighbor's because "get_neighbor"
+            # returns local optimas.
             self.state = [0]*N
             for i,x in enumerate(self.neighbor_state):
                 self.state[i] = x
@@ -186,7 +191,54 @@ class Board:
                 self.neighbor_state[random.randint(0, N-1)] = random.randint(0, N-1)
                 self.neighbor_board = self.generate_board(self.neighbor_state)
 
+    def get_random_neighbor(self):
+        N = self.N
+        temp_state = [0]*N
+        while(True):
+            for i,x in enumerate(temp_state):
+                temp_state[i] = random.randint(0,N-1)
+            if temp_state != self.state:
+                break
+        temp_board = self.generate_board(temp_state)
 
+        self.neighbor_state = [0]*N
+        for i,x in enumerate(temp_state):
+            self.neighbor_state[i] = x
+        self.neighbor_board = self.generate_board(self.neighbor_state)
+
+    def simmulated_annealing(self,T):
+        N = self.N
+        t = T
+
+        # initialize neighbor to current state
+        self.neighbor_state = [0]*N
+        for i,x in enumerate(self.state):
+            self.neighbor_state[i] = x
+        self.neighbor_board = self.generate_board(self.neighbor_state)
+
+        while(t > 0):
+            t *= 0.99
+            
+            self.get_random_neighbor()
+
+            next_state = self.get_score(self.neighbor_board, self.neighbor_state)
+            current = self.get_score(self.board, self.state)
+            delta = next_state - current
+            # print(delta)
+            # print(np.exp(-delta/t))
+            if delta < 0 or random.uniform(0,1) < np.exp(-delta/2/t):
+                # print(np.exp(-delta/t))
+                self.state = [0]*N
+                for i,x in enumerate(self.neighbor_state):
+                    self.state[i] = x
+                self.board = self.generate_board(self.state)
+                if next_state == 0:
+                    self.print_board(self.board)
+                    print("current = 0")
+                    break
+
+            
+     
 if __name__ == "__main__":
     Board = Board(25)
     Board.generate()
@@ -196,4 +248,6 @@ if __name__ == "__main__":
     print("")
     print("solving... please be patient!")
     print("")
-    Board.hill_climbing()
+    
+    #Board.hill_climbing()
+    Board.simmulated_annealing(300)
