@@ -7,7 +7,7 @@ class: COMP 5660 (Auburn University)
 
 import random
 import time
-import numpy as np
+from math import exp
 
 # State is a 1D array, length N, that for each index/column, i, it tells 
 # us what row to place the queen.
@@ -15,20 +15,23 @@ import numpy as np
 class Board:
     def __init__(self, N):
         self.N = N
+        self.get_neighbor_clock = 0
+        self.score_clock = 0
+        self.get_score_count = 0
 
     def generate(self):
         random.seed()
         N = self.N
         self.board = [[0]*N for x in range(N)]
         self.state = [0]*N
-        for i,x in enumerate(self.board):
+        for i in range(N):
             self.state[i] = random.randint(0,self.N-1)
             self.board[self.state[i]][i] = 1
 
     def generate_board(self, state):
         N = self.N
         ret_board = [[0]*N for x in range(N)]
-        for i,x in enumerate(self.board):
+        for i in range(N):
             ret_board[state[i]][i] = 1
         return ret_board
 
@@ -38,19 +41,22 @@ class Board:
 
     def get_score(self, board, state):
         N = self.N
-
         ticks = 0 # ticks are number of queens that can attack each other
-        for i,x in enumerate(board):
+        for i in range(N):
             
-            # checking left
+            # checking left and right
             row = state[i]
             col = i
-            # print("Queen: %d,%d" % (row,col))
-            while col > 0:
-                col -= 1
-                if board[row][col] == 1:
-                    # print("tick left")
-                    ticks += 1
+            hits = board[row].count(1)
+            if hits > 1:
+                ticks += hits-1
+            
+            # checking up and down
+            row = state[i]
+            col = i
+            hits = [col[i] for col in board].count(1)
+            if hits > 1:
+                ticks += hits-1
 
             # checking diagonally left
             row = state[i]
@@ -61,15 +67,6 @@ class Board:
                 if board[row][col] == 1:
                     # print("tick d left")
                     ticks += 1
-            
-            # checking up
-            row = state[i]
-            col = i
-            while row > 0:
-                row -= 1
-                if board[row][col] == 1:
-                    # print("tick up")
-                    ticks += 1
 
             # checking diagonally up right
             row = state[i]
@@ -79,15 +76,6 @@ class Board:
                 col += 1
                 if board[row][col] == 1:
                     # print("tick d right")
-                    ticks += 1
-
-            # checking right
-            row = state[i]
-            col = i
-            while col < N-1:
-                col += 1
-                if board[row][col] == 1:
-                    # print("tick right")
                     ticks += 1
             
             # checking diagonally down right
@@ -100,15 +88,6 @@ class Board:
                     # print("tick dd right")
                     ticks += 1
 
-            # checking down
-            row = state[i]
-            col = i
-            while row < N-1:
-                row += 1
-                if board[row][col] == 1:
-                    # print("tick down")
-                    ticks += 1
-
             # checking diagonally down left
             row = state[i]
             col = i
@@ -119,20 +98,15 @@ class Board:
                     # print("tick dd l")
                     ticks += 1
 
-            # print(i,ticks)
         return ticks
 
     def get_neighbor(self):
         N = self.N
-        optimal_state = [0]*N
-        for i,x in enumerate(self.neighbor_state):
-            optimal_state[i] = x
+        optimal_state = self.neighbor_state.copy()
         optimal_board = self.generate_board(optimal_state)
         optimal_score = self.get_score(optimal_board, optimal_state)
 
-        temp_state = [0]*N
-        for i,x in enumerate(self.neighbor_state):
-            temp_state[i] = x
+        temp_state = self.neighbor_state.copy()
         temp_board = self.generate_board(temp_state)
 
         # iterating through all possible neighbors
@@ -149,9 +123,7 @@ class Board:
 
                     if temp_score <= optimal_score:
                         optimal_score = temp_score
-                        optimal_state = [0]*N
-                        for i,x in enumerate(temp_state):
-                            optimal_state[i] = x
+                        optimal_state = temp_state.copy()
                         optimal_board = self.generate_board(optimal_state)
                     
                     # putting temp board back to current state for next iteration
@@ -159,18 +131,14 @@ class Board:
                     temp_state[x] = self.neighbor_state[x]
                     temp_board[self.neighbor_state[x]][x] = 1
 
-        self.neighbor_state = [0]*N
-        for i,x in enumerate(optimal_state):
-            self.neighbor_state[i] = x
+        self.neighbor_state = optimal_state.copy()
         self.neighbor_board = self.generate_board(self.neighbor_state)
 
     def hill_climbing(self):
         N = self.N
 
         # initialize neighbor to current state
-        self.neighbor_state = [0]*N
-        for i,x in enumerate(self.state):
-            self.neighbor_state[i] = x
+        self.neighbor_state = self.state
         self.neighbor_board = self.generate_board(self.neighbor_state)
 
 
@@ -178,9 +146,7 @@ class Board:
 
             # Always set current state to neighbor's because "get_neighbor"
             # returns local optimas.
-            self.state = [0]*N
-            for i,x in enumerate(self.neighbor_state):
-                self.state[i] = x
+            self.state = self.neighbor_state.copy()
             self.board = self.generate_board(self.state)
             
             self.get_neighbor()
@@ -198,12 +164,11 @@ class Board:
         N = self.N
         temp_state = [0]*N
         while(True):
-            for i,x in enumerate(temp_state):
+            for i in range(N):
                 temp_state[i] = random.randint(0,N-1)
             if temp_state != self.state:
                 break
         temp_board = self.generate_board(temp_state)
-
         self.neighbor_state = [0]*N
         for i,x in enumerate(temp_state):
             self.neighbor_state[i] = x
@@ -214,40 +179,29 @@ class Board:
         t = T
 
         # initialize neighbor to current state
-        self.neighbor_state = [0]*N
-        for i,x in enumerate(self.state):
-            self.neighbor_state[i] = x
+        self.neighbor_state = self.state.copy()
         self.neighbor_board = self.generate_board(self.neighbor_state)
-        best = 9999
-        while(t > 0):
-            t *= 0.99
-            
-            self.get_random_neighbor()
 
+        while(t > 0):
+            t *= 0.9
+            
+            self.get_neighbor()
             next_state = self.get_score(self.neighbor_board, self.neighbor_state)
             current = self.get_score(self.board, self.state)
             delta = next_state - current
-            delta_best = next_state - best
             if delta < 0:
-                best = next_state
-                if delta_best < 0:
-                    self.state = [0]*N
-                    for i,x in enumerate(self.neighbor_state):
-                        self.state[i] = x
-                    self.board = self.generate_board(self.state)
-
+                # print("Current Score: %d" % next_state)
+                self.state = self.neighbor_state.copy()
+                self.board = self.generate_board(self.state)
                 if next_state == 0:
-                    self.state = [0]*N
-                    for i,x in enumerate(self.neighbor_state):
-                        self.state[i] = x
+                    self.state = self.neighbor_state.copy()
                     self.board = self.generate_board(self.state)
                     print("solution: ")
                     self.print_board(self.board)
                     break
-            elif random.uniform(0,1) < np.exp(-delta/t):
-                self.state = [0]*N
-                for i,x in enumerate(self.neighbor_state):
-                    self.state[i] = x
+            elif random.uniform(0,1) < exp(-delta/t):
+                self.get_random_neighbor()
+                self.state = self.neighbor_state.copy()
                 self.board = self.generate_board(self.state)
 
             
