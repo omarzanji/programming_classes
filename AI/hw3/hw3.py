@@ -6,7 +6,9 @@ class: COMP 5660 (Auburn University)
 """
 
 import random
+import time
 import numpy as np
+
 # State is a 1D array, length N, that for each index/column, i, it tells 
 # us what row to place the queen.
 
@@ -184,6 +186,7 @@ class Board:
             self.get_neighbor()
 
             if self.state == self.neighbor_state:
+                print("solution: ")
                 self.print_board(self.board)
                 break
 
@@ -206,7 +209,7 @@ class Board:
             self.neighbor_state[i] = x
         self.neighbor_board = self.generate_board(self.neighbor_state)
 
-    def simmulated_annealing(self,T):
+    def simulated_annealing(self,T):
         N = self.N
         t = T
 
@@ -215,7 +218,7 @@ class Board:
         for i,x in enumerate(self.state):
             self.neighbor_state[i] = x
         self.neighbor_board = self.generate_board(self.neighbor_state)
-
+        best = 9999
         while(t > 0):
             t *= 0.99
             
@@ -224,30 +227,60 @@ class Board:
             next_state = self.get_score(self.neighbor_board, self.neighbor_state)
             current = self.get_score(self.board, self.state)
             delta = next_state - current
-            # print(delta)
-            # print(np.exp(-delta/t))
-            if delta < 0 or random.uniform(0,1) < np.exp(-delta/2/t):
-                # print(np.exp(-delta/t))
+            delta_best = next_state - best
+            if delta < 0:
+                best = next_state
+                if delta_best < 0:
+                    self.state = [0]*N
+                    for i,x in enumerate(self.neighbor_state):
+                        self.state[i] = x
+                    self.board = self.generate_board(self.state)
+
+                if next_state == 0:
+                    self.state = [0]*N
+                    for i,x in enumerate(self.neighbor_state):
+                        self.state[i] = x
+                    self.board = self.generate_board(self.state)
+                    print("solution: ")
+                    self.print_board(self.board)
+                    break
+            elif random.uniform(0,1) < np.exp(-delta/t):
                 self.state = [0]*N
                 for i,x in enumerate(self.neighbor_state):
                     self.state[i] = x
                 self.board = self.generate_board(self.state)
-                if next_state == 0:
-                    self.print_board(self.board)
-                    print("current = 0")
-                    break
 
             
      
 if __name__ == "__main__":
     Board = Board(25)
     Board.generate()
+    prob_board = Board.board
+    prob_state = Board.state
+
     print("")
-    print("original board:")
+    print("Problem board:")
     Board.print_board(Board.board)
     print("")
     print("solving... please be patient!")
     print("")
-    
-    #Board.hill_climbing()
-    Board.simmulated_annealing(300)
+
+    hill_time0 = time.perf_counter()
+    Board.hill_climbing()
+    hill_time1 = time.perf_counter()
+    print("Hill Climbing Time: %d seconds" % (hill_time1-hill_time0))
+    print("")
+
+    Board.board = prob_board
+    Board.state = prob_state
+
+    print("")
+    print("Simulated Annealing: ")
+    print("solving... please be patient!")
+    print("")
+
+    annealiing_time0 = time.perf_counter()
+    Board.simulated_annealing(300)
+    annealiing_time1 = time.perf_counter()
+    print("Simulated Annealing Time: %d seconds" % (annealiing_time1-annealiing_time0))
+    print("")
