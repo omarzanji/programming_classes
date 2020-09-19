@@ -139,7 +139,7 @@ class Board:
         N = self.N
 
         # initialize neighbor to current state
-        self.neighbor_state = self.state
+        self.neighbor_state = self.state.copy()
         self.neighbor_board = self.generate_board(self.neighbor_state)
 
 
