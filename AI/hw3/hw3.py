@@ -234,7 +234,7 @@ if __name__ == "__main__":
     print("")
 
     annealiing_time0 = time.perf_counter()
-    Board.simulated_annealing(300)
+    Board.simulated_annealing(500)
     annealiing_time1 = time.perf_counter()
     print("Simulated Annealing Time: %d seconds" % (annealiing_time1-annealiing_time0))
     print("")
