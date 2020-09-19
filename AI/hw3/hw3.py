@@ -1,8 +1,9 @@
 """
 author: Omar Barazanji
-description: N-Queens Solver using Hill Climbing Algorithm.
+description: N-Queens Solver using Hill Climbing and Simulated Annealing.
 date: 9/15/2020
 class: COMP 5660 (Auburn University)
+sources: Geeksforgeeks, and my course textbook.
 """
 
 import random
