@@ -92,7 +92,8 @@ void read_file(FILE *file_desc, task_struct task_list[], int *size) {
 void FCFS(task_struct task_list[], int size) {
     int curr_pid, curr_arr_time, curr_burst;
     int time = 0;
-    double wait_sum, turn_sum;
+    int old = 0;
+    double wait_sum, turn_sum, delta;
     double avg_wait, avg_turn;
     for (int i=0; i<size; i++) {
         curr_pid = task_list[i].pid;
@@ -105,7 +106,9 @@ void FCFS(task_struct task_list[], int size) {
             runtime++;
         }
         turn_sum += time;
-        wait_sum += (turn_sum - curr_burst);
+        delta = turn_sum - old;
+        old = turn_sum;
+        wait_sum += (delta - curr_burst);
         printf("<time %u> process %u is finished...\n", time, curr_pid);
     }
     avg_wait = wait_sum/size;
@@ -123,7 +126,8 @@ void FCFS(task_struct task_list[], int size) {
 void RR(task_struct task_list[], int size, int quantum) {
     int curr_pid, curr_arr_time, curr_burst;
     int time = 0;
-    double wait_sum, turn_sum;
+    int old = 0;
+    double wait_sum, turn_sum, delta;
     double avg_wait, avg_turn;
     int temp[size];
     int ignore[size];
@@ -154,7 +158,9 @@ void RR(task_struct task_list[], int size, int quantum) {
             }
             if (ignore[i] == 1) {
                 turn_sum += time;
-                wait_sum += (turn_sum - curr_burst);
+                delta = turn_sum - old;
+                old = turn_sum;
+                wait_sum += (delta - curr_burst);
                 printf("<time %u> process %u is finished...\n", time, curr_pid);
             }
         }
@@ -176,7 +182,8 @@ void RR(task_struct task_list[], int size, int quantum) {
 void SRTF(task_struct task_list[], int size) {
     int curr_pid, curr_arr_time, curr_burst;
     int time = 0;
-    double wait_sum, turn_sum;
+    int old = 0;
+    double wait_sum, turn_sum, delta;
     double avg_wait, avg_turn;
 
     int times[size];
@@ -204,7 +211,9 @@ void SRTF(task_struct task_list[], int size) {
             time++;
             if (times[i] == 0) {
                 turn_sum += time;
-                wait_sum += (turn_sum - curr_burst);
+                delta = turn_sum - old;
+                old = turn_sum;
+                wait_sum += (delta - curr_burst);
                 completed++;
                 printf("<time %u> process %u is finished...\n", time, curr_pid);            
             }
