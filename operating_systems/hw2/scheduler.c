@@ -19,15 +19,17 @@ typedef struct task_info {
     u_int burst_time;
 } task_struct;
 
-// Function instantiations
+// Function declarations
 void read_file(FILE *file_desc, task_struct task_list[], int *size);
 int open_file(char *name, FILE **file_descriptor);
 void print_task_list(task_struct task_list[], int size);
 int open_file(char *name, FILE **file_descriptor);
 void FCFS(task_struct task_list[], int size);
 void RR(task_struct task_list[], int size, int quantum);
+void SRTF(task_struct task_list[], int size);
 
 
+//main
 int main(int argc, char *argv[]) {
     char *name;
     char *type;
@@ -59,6 +61,9 @@ int main(int argc, char *argv[]) {
         }
         qntm_int = strtol(argv[3], &qntm, 10);
         RR(task_arr, count, qntm_int);
+    }
+    else if (strcmp(type, "SRTF") == 0) {
+        SRTF(task_arr, count);
     }
 
     fclose(fp);
@@ -127,7 +132,6 @@ void RR(task_struct task_list[], int size, int quantum) {
     for (int i=0; i<size; i++) {
         temp[i] = task_list[i].burst_time;
     }
-
     while (completed < size) {
         for (int i=0; i<size; i++) {
             if (ignore[i] == 1) {
@@ -152,6 +156,57 @@ void RR(task_struct task_list[], int size, int quantum) {
                 turn_sum += time;
                 wait_sum += (turn_sum - curr_burst);
                 printf("<time %u> process %u is finished...\n", time, curr_pid);
+            }
+        }
+    }
+    avg_wait = wait_sum/size;
+    avg_turn = turn_sum/size;
+    printf("<time %u> All processes finshed...\n", time);
+    printf("==================================================================\n");
+    printf("Average waiting time: %0.2f\n", avg_wait);
+    printf("Average turnaround time: %0.2f\n", avg_turn);
+    printf("==================================================================\n");
+}
+
+/**
+ * 
+ * 
+ * 
+ */
+void SRTF(task_struct task_list[], int size) {
+    int curr_pid, curr_arr_time, curr_burst;
+    int time = 0;
+    double wait_sum, turn_sum;
+    double avg_wait, avg_turn;
+
+    int times[size];
+    int arr_times[size];
+
+    for (int i=0; i<size; i++) {
+        times[i] = task_list[i].burst_time;
+        arr_times[i] = task_list[i].arrival_time;
+    }
+    
+    int completed = 0;
+    int shortest = times[0];
+    while (completed < size) {
+        for (int i=0; i<size; i++) {
+            if (time >= arr_times[i]) { 
+                if ((times[i] <= shortest) && (times[i] != 0)) {
+                    curr_burst = times[i];
+                    curr_pid = task_list[i].pid;
+                } else {
+                    continue;
+                }
+            }
+            printf("<time %u> process %u is running\n", time, curr_pid);
+            times[i]--;
+            time++;
+            if (times[i] == 0) {
+                turn_sum += time;
+                wait_sum += (turn_sum - curr_burst);
+                completed++;
+                printf("<time %u> process %u is finished...\n", time, curr_pid);            
             }
         }
     }
