@@ -23,7 +23,6 @@ typedef struct task_info {
 void read_file(FILE *file_desc, task_struct task_list[], int *size);
 int open_file(char *name, FILE **file_descriptor);
 void print_task_list(task_struct task_list[], int size);
-int open_file(char *name, FILE **file_descriptor);
 void FCFS(task_struct task_list[], int size);
 void RR(task_struct task_list[], int size, int quantum);
 void SRTF(task_struct task_list[], int size);
@@ -56,7 +55,7 @@ int main(int argc, char *argv[]) {
     }
     else if (strcmp(type, "RR") == 0) {
         if (argc != 4) {
-            printf("please enter a time quantum!");
+            printf("please enter a time quantum!\n");
             return 1;
         }
         qntm_int = strtol(argv[3], &qntm, 10);
@@ -72,8 +71,7 @@ int main(int argc, char *argv[]) {
 
 
 /**
- * 
- *
+ * From class.
  */
 void read_file(FILE *file_desc, task_struct task_list[], int *size) {
    int num = 0;
@@ -85,15 +83,12 @@ void read_file(FILE *file_desc, task_struct task_list[], int *size) {
 }
 
 /**
- * 
- * 
- * 
+ * First Come First Serve.
  */
 void FCFS(task_struct task_list[], int size) {
     int curr_pid, curr_arr_time, curr_burst;
     int time = 0;
-    int old = 0;
-    double wait_sum, turn_sum, delta;
+    double wait_sum, turn_sum;
     double avg_wait, avg_turn;
     for (int i=0; i<size; i++) {
         curr_pid = task_list[i].pid;
@@ -106,28 +101,26 @@ void FCFS(task_struct task_list[], int size) {
             runtime++;
         }
         turn_sum += time;
-        delta = turn_sum - old;
-        old = turn_sum;
-        wait_sum += (delta - curr_burst);
+        wait_sum += (time - curr_burst);
         printf("<time %u> process %u is finished...\n", time, curr_pid);
     }
     avg_wait = wait_sum/size;
     avg_turn = turn_sum/size;
-    printf("<time %u> All processes finshed...\n", time);
+    printf("<time %u> All processes finished...\n", time);
     printf("==================================================================\n");
     printf("Average waiting time: %0.2f\n", avg_wait);
     printf("Average turnaround time: %0.2f\n", avg_turn);
+    printf("Average CPU usage: 100 %%\n");
     printf("==================================================================\n");
 }
 
 /**
- * 
+ * Round Robin.
  */
 void RR(task_struct task_list[], int size, int quantum) {
     int curr_pid, curr_arr_time, curr_burst;
     int time = 0;
-    int old = 0;
-    double wait_sum, turn_sum, delta;
+    double wait_sum, turn_sum;
     double avg_wait, avg_turn;
     int temp[size];
     int ignore[size];
@@ -158,32 +151,28 @@ void RR(task_struct task_list[], int size, int quantum) {
             }
             if (ignore[i] == 1) {
                 turn_sum += time;
-                delta = turn_sum - old;
-                old = turn_sum;
-                wait_sum += (delta - curr_burst);
+                wait_sum += (time - curr_burst);
                 printf("<time %u> process %u is finished...\n", time, curr_pid);
             }
         }
     }
     avg_wait = wait_sum/size;
     avg_turn = turn_sum/size;
-    printf("<time %u> All processes finshed...\n", time);
+    printf("<time %u> All processes finished...\n", time);
     printf("==================================================================\n");
     printf("Average waiting time: %0.2f\n", avg_wait);
     printf("Average turnaround time: %0.2f\n", avg_turn);
+    printf("Average CPU usage: 100 %%\n");
     printf("==================================================================\n");
 }
 
 /**
- * 
- * 
- * 
+ * Shortest remaining time first.
  */
 void SRTF(task_struct task_list[], int size) {
     int curr_pid, curr_arr_time, curr_burst;
     int time = 0;
-    int old = 0;
-    double wait_sum, turn_sum, delta;
+    double wait_sum, turn_sum;
     double avg_wait, avg_turn;
 
     int times[size];
@@ -195,25 +184,29 @@ void SRTF(task_struct task_list[], int size) {
     }
     
     int completed = 0;
-    int shortest = times[0];
+    int shortest = 0;
     while (completed < size) {
         for (int i=0; i<size; i++) {
             if (time >= arr_times[i]) { 
-                if ((times[i] <= shortest) && (times[i] != 0)) {
-                    curr_burst = times[i];
+                if ((times[i] <= times[shortest]) && (times[i] != 0)) {
+                    shortest = i;
+                    curr_burst = task_list[i].burst_time;
                     curr_pid = task_list[i].pid;
                 } else {
                     continue;
                 }
             }
             printf("<time %u> process %u is running\n", time, curr_pid);
-            times[i]--;
+            times[shortest]--;
             time++;
-            if (times[i] == 0) {
+            if (times[shortest] == 0) {
+                for (int i=0; i<size; i++) {
+                    if (times[i] != 0) {
+                        shortest = i;
+                    }
+                }
                 turn_sum += time;
-                delta = turn_sum - old;
-                old = turn_sum;
-                wait_sum += (delta - curr_burst);
+                wait_sum += (time - curr_burst);
                 completed++;
                 printf("<time %u> process %u is finished...\n", time, curr_pid);            
             }
@@ -221,16 +214,16 @@ void SRTF(task_struct task_list[], int size) {
     }
     avg_wait = wait_sum/size;
     avg_turn = turn_sum/size;
-    printf("<time %u> All processes finshed...\n", time);
+    printf("<time %u> All processes finished...\n", time);
     printf("==================================================================\n");
     printf("Average waiting time: %0.2f\n", avg_wait);
     printf("Average turnaround time: %0.2f\n", avg_turn);
+    printf("Average CPU usage: 100 %%\n");
     printf("==================================================================\n");
 }
 
 /**
- * 
- * 
+ * From class.
  */
 void print_task_list(task_struct task_list[], int size) {
     int i;
@@ -245,8 +238,7 @@ void print_task_list(task_struct task_list[], int size) {
 }
 
 /**
- * 
- * 
+ * From class.
  */
 int open_file(char *name, FILE **file_desc) {
     if (! (*file_desc = fopen(name, "r"))) {
