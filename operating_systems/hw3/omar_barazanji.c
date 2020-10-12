@@ -77,20 +77,20 @@ void *consumer(void *ptr)
     {
         // Lock the_mutex before you start, see step 1 example in producer 
         // #1#BEGIN# DO NOT MODIFY THIS COMMENT LINE!
-
+        pthread_mutex_lock(&the_mutex);
 
 		// #1#END# DO NOT MODIFY THIS COMMENT LINE!
 
         // When the buffer IS empty, nothing to consume, so we have to wait, 
         // see step 2 example in producer
         // #2#BEGIN# DO NOT MODIFY THIS COMMENT LINE!
-
+        while(buffer == 0) pthread_cond_wait(&condc, &the_mutex); 
 
 		// #2#END# DO NOT MODIFY THIS COMMENT LINE!
 
 		// Assign the buffer data to the varible get_data
 		// #3#BEGIN# DO NOT MODIFY THIS COMMENT LINE!
-
+        get_data = buffer;
 
 		// #3#END# DO NOT MODIFY THIS COMMENT LINE!
 
@@ -99,27 +99,27 @@ void *consumer(void *ptr)
 
         // Clear the buffer by assign value 0 to the buffer
         // #4#BEGIN# DO NOT MODIFY THIS COMMENT LINE!
-
+        buffer = 0;
 
         // #4#END# DO NOT MODIFY THIS COMMENT LINE!
 
 		// Notify the condition varible of producer that good to go
 		// see step 5 example in producer
 		// #5#BEGIN# DO NOT MODIFY THIS COMMENT LINE!
-
+        pthread_cond_signal(&condp);
 
         // #5#END# DO NOT MODIFY THIS COMMENT LINE!
 
         // Unlock the mutex, see step 6 example in producer
         // #6#BEGIN# DO NOT MODIFY THIS COMMENT LINE!
-
+        pthread_mutex_unlock(&the_mutex);
 
         // #6#END# DO NOT MODIFY THIS COMMENT LINE!
     }
     
     // exit the thread, return with 0, which means "success", see step 7 in producer
     // #7#BEGIN# DO NOT MODIFY THIS COMMENT LINE!
- 
+    pthread_exit(0);
 
     // #7#END# DO NOT MODIFY THIS COMMENT LINE!
     
