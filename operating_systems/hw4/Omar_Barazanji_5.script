@@ -1,0 +1,68 @@
+Script started on Wed 28 Oct 2020 10:34:54 PM CDT
+[?1034hbash-4.2$ exit./Omar_Barazanji_5[C[C[C[C[C[C[C[C[C[Cexit[K./Omar_Barazanji_5[C[C[C[C[C[C[C[C[C[Cexit[K./Omar_Barazanji_5
+m: input the number of processes
+^[[A^[[A        4
+n: input the number of types of resources
+3
+Max Matrix: input the value of each element left to right, top to bottom
+7
+5
+3
+3
+2
+2
+9
+0
+2
+2
+2
+2
+Allocation Matrix: input the value of each element left to right, top to bottom
+0
+1
+0
+2
+0
+0
+3
+0
+2
+2
+1
+1
+Available Vector: input the value of each element left to right
+3
+3
+4
+The system is safe
+The safe sequence is:
+1 
+A process start to request resources. The process number is: 
+1
+Each type resource requested by this proess
+1
+2
+2
+The system is safe
+The safe sequence is:
+1 
+Request approved!
+Do you want to try again? Yes press y/Y, otherwise press any other key to quit
+y
+A process start to request resources. The process number is: 
+0
+Each type resource requested by this proess
+7
+4
+3
+Requested more than available, please re-try!
+Requested more than available, please re-try!
+Requested more than available, please re-try!
+The system is not safe
+Your request is declined!
+Do you want to try again? Yes press y/Y, otherwise press any other key to quit
+q
+bash-4.2$ exit
+exit
+
+Script done on Wed 28 Oct 2020 10:35:49 PM CDT
