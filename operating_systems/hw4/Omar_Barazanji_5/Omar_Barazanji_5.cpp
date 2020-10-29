@@ -107,7 +107,7 @@ bool Safe(){
         // all process number of the safe sequence
         // write a "if" statement
         // #4#BEGIN# DO NOT MODIFY THIS COMMENT LINE!
-        if (l <= i) {
+        if (l <= MAXPROCESS) {
         // #4#END# DO NOT MODIFY THIS COMMENT LINE!
             // if the system is safe, the resource will be assigned to the processes
             cout<<"The system is safe"<<endl;
