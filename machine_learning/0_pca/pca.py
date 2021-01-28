@@ -13,8 +13,6 @@ def PCA(X, k):
     mu = np.mean(X)
     N = X.shape[0]
     X = X - mu*np.ones((N, 1))
-    centx = []
-    centy = []
     fig2 = plt.figure()
     plt.scatter(X[0], X[1])
     plt.title("Data Centered")
@@ -38,6 +36,5 @@ if __name__ == "__main__":
         projx.append(x[0])
         projy.append(x[1])
     plt.scatter(projx,projy)
-    plt.plot(U)
     plt.title("Projection")
     plt.show()
