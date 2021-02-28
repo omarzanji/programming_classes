@@ -13,8 +13,11 @@ import numpy as np
 
 class Perceptron:
 
-    def __init__(self):
+    def __init__(self, Xin, Yin):
         self.bias_val = 1
+
+        self.Xin = Xin
+        self.Yin = Yin
 
         # should update to better values
         self.w_arr = [0,0.4,0.6]
@@ -34,26 +37,27 @@ class Perceptron:
         self.sep_y = sepr_y
 
 
-    def perceptron(self, Xin):
-        for ndx,x_n in enumerate(Xin):
-            # bias
-            x_0 = self.bias_val * self.w_arr[0]
-            # inputs
-            x_1 = x_n[0] * self.w_arr[1]
-            x_2 = x_n[1] * self.w_arr[2]
-            summation = x_0 + x_1 + x_2
-            # print("sum",summation)
-            self.gen_sep()
-            if summation > 0:
-                print(ndx)
-                if x_n[1] < self.sep_y[ndx]:
-                    self.w_arr[0] = self.w_arr[0] + 0.2*-1*self.bias_val
-                    self.w_arr[1] = self.w_arr[1] + 0.2*-1*x_n[0]
-                    self.w_arr[2] = self.w_arr[2] + 0.2*-1*x_n[1]
-                else:
-                    self.w_arr[0] = self.w_arr[0] + 0.2*1*self.bias_val
-                    self.w_arr[1] = self.w_arr[1] + 0.2*1*x_n[0]
-                    self.w_arr[2] = self.w_arr[2] + 0.2*1*x_n[1]
+    def perceptron(self):
+        for ndx,line in enumerate(self.Xin):
+            for x_n in line:
+                # bias
+                x_0 = self.bias_val * self.w_arr[0]
+                # inputs
+                x_1 = int(x_n[0]) * self.w_arr[1]
+                x_2 = int(x_n[1]) * self.w_arr[2]
+                summation = x_0 + x_1 + x_2
+                # print("sum",summation)
+                self.gen_sep()
+                if summation > 0:
+                    print(ndx)
+                    if int(x_n[1]) < self.sep_y[ndx]:
+                        self.w_arr[0] = self.w_arr[0] + 0.2*-1*self.bias_val
+                        self.w_arr[1] = self.w_arr[1] + 0.2*-1*int(x_n[0])
+                        self.w_arr[2] = self.w_arr[2] + 0.2*-1*int(x_n[1])
+                    else:
+                        self.w_arr[0] = self.w_arr[0] + 0.2*1*self.bias_val
+                        self.w_arr[1] = self.w_arr[1] + 0.2*1*int(x_n[0])
+                        self.w_arr[2] = self.w_arr[2] + 0.2*1*int(x_n[1])
         return self.w_arr
 
     def gen_data(self, dim=2):
@@ -79,9 +83,10 @@ class Perceptron:
     def plot_input(self, Xin, color='blue', label='input'):
         x_vals = []
         y_vals = []
-        for x in Xin:
-            x_vals.append(x[0])
-            y_vals.append(x[1])
+        for line in Xin:
+            for x in line:
+                x_vals.append(x[0])
+                y_vals.append(x[1])
         plt.scatter(x_vals, y_vals, color=color, label=label)
         plt.legend()
 
