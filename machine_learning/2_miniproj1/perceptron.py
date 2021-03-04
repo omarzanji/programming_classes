@@ -19,8 +19,7 @@ class Perceptron:
         self.Xin = Xin
         self.Yin = Yin
 
-        # should update to better values
-        self.w_arr = [0,0.4,0.6]
+        self.w_arr = [0,0.2,0.4]
 
         self.sep_x = []
         self.sep_y = []
@@ -37,74 +36,123 @@ class Perceptron:
         self.sep_y = sepr_y
 
 
-    def perceptron(self):
-        for ndx,line in enumerate(self.Xin):
-            for x_n in line:
+    def perceptron2(self, T):
+        for ndx,point in enumerate(self.Xin):
+            if ndx+1 == T: break
+
+            if ndx%3 == 0:
+                yn = self.Yin[point[0]]
+                x0 = self.bias_val
+                x1 = self.Xin[ndx-3][2]
+                x2 = self.Xin[ndx-2][2]
+                x3 = self.Xin[ndx-1][2]
+                x4 = point[2]
+
                 # bias
-                x_0 = self.bias_val * self.w_arr[0]
+                x_0 = x0 * self.w_arr[0]
                 # inputs
-                x_1 = int(x_n[0]) * self.w_arr[1]
-                x_2 = int(x_n[1]) * self.w_arr[2]
+                x_1 = x1 * self.w_arr[1]
+                x_2 = x2 * self.w_arr[2]
+
                 summation = x_0 + x_1 + x_2
-                # print("sum",summation)
                 self.gen_sep()
-                if summation > 0:
-                    print(ndx)
-                    if int(x_n[1]) < self.sep_y[ndx]:
-                        self.w_arr[0] = self.w_arr[0] + 0.2*-1*self.bias_val
-                        self.w_arr[1] = self.w_arr[1] + 0.2*-1*int(x_n[0])
-                        self.w_arr[2] = self.w_arr[2] + 0.2*-1*int(x_n[1])
-                    else:
-                        self.w_arr[0] = self.w_arr[0] + 0.2*1*self.bias_val
-                        self.w_arr[1] = self.w_arr[1] + 0.2*1*int(x_n[0])
-                        self.w_arr[2] = self.w_arr[2] + 0.2*1*int(x_n[1])
+                if yn*summation > 0:
+                    # if int(x_n[1]) < self.sep_y[ndx]:
+                    self.w_arr[0] = self.w_arr[0] + 0.2*yn*x0
+                    self.w_arr[1] = self.w_arr[1] + 0.2*yn*x1
+                    self.w_arr[2] = self.w_arr[2] + 0.2*yn*x2
+                else:
+                    self.w_arr[0] = self.w_arr[0] + 0.2*yn*x0
+                    self.w_arr[1] = self.w_arr[1] + 0.2*yn*x1
+                    self.w_arr[2] = self.w_arr[2] + 0.2*yn*x2
         return self.w_arr
 
-    def gen_data(self, dim=2):
-        X = []
-        for x in range(10):
-            point = (np.random.randint(-4,5),np.random.randint(-4,5))
-            X.append(point)
-        return X
+    def perceptron(self, T):
+        for ndx,point in enumerate(self.Xin):
+            if ndx+1 == T: break
+            yn = self.Yin[point[0]]
+            x0 = self.bias_val
+            x1 = 0
+            x2 = point[1]
+
+            # bias
+            x_0 = x0 * self.w_arr[0]
+            # inputs
+            x_1 = x1 * self.w_arr[1]
+            x_2 = x2 * self.w_arr[2]
+
+            summation = x_0 + x_1 + x_2
+            self.gen_sep()
+            if yn*summation > 0:
+                self.w_arr[0] = self.w_arr[0] + 0.2*yn*x0
+                self.w_arr[1] = self.w_arr[1] + 0.2*yn*x1
+                self.w_arr[2] = self.w_arr[2] + 0.2*yn*x2
+            else:
+                self.w_arr[0] = self.w_arr[0] + 0.2*yn*x0
+                self.w_arr[1] = self.w_arr[1] + 0.2*yn*x1
+                self.w_arr[2] = self.w_arr[2] + 0.2*yn*x2
+        return self.w_arr
             
-    def plot_separator(self, weights):
-        # w1*x1 + w2*x2 = 0
-        # solve for x2:
-        # x2 = -(w1*x1) / w2
+    def plot_separator1(self, weights):
+        w0 = weights[0]
         w1 = weights[1]
         w2 = weights[2]
         sepr_x = np.linspace(-2,5,10).tolist()
         sepr_y = []
         for x in sepr_x:
-            val = -(w1*x) / w2
+            val = -((w1 / w2)*x) - w0
             sepr_y.append(val)
         plt.plot(sepr_x, sepr_y, label='separator')
-
-    def plot_input(self, Xin, color='blue', label='input'):
-        x_vals = []
-        y_vals = []
-        for line in Xin:
-            for x in line:
-                x_vals.append(x[0])
-                y_vals.append(x[1])
-        plt.scatter(x_vals, y_vals, color=color, label=label)
+        plt.legend()
+        
+    def plot_separator2(self, weights):
+        w0 = weights[0]
+        w1 = weights[1]
+        w2 = weights[2]
+        sepr_x = np.linspace(-2,5,10).tolist()
+        sepr_y = []
+        for x in sepr_x:
+            val = -((w1 / w2)*x)
+            sepr_y.append(val)
+        plt.plot(sepr_x, sepr_y, label='separator')
         plt.legend()
 
+    def plot_input2(self, Xin, T):
+        x_vals1 = []
+        y_vals1 = []
+        x_vals2 = []
+        y_vals2 = []
+        for ndx,point in enumerate(Xin):
+            if ndx+1 == T: break
+            if ndx%3 == 0:
+                if self.Yin[point[0]] == 1:
+                    x_vals1.append(Xin[ndx-3][2])
+                    y_vals1.append(Xin[ndx-2][2])
+                elif self.Yin[point[0]] == 2:
+                    x_vals2.append(Xin[ndx-3][2])
+                    y_vals2.append(Xin[ndx-2][2])
 
-if __name__ == "__main__":
-    X1d = [(1,0),(2,0),(3,0),(4,0)]
-    X2d = [(1,2),(2,-1),(3,2),(4,-1)]
-    p = Perceptron()
-    Xgen = p.gen_data(2)
-    print(Xgen)
-    # trained_weights = p.perceptron(X1d)
-    for x in range(10):
-        trained_weights = p.perceptron(Xgen)
-    p.plot_separator(trained_weights)
-    # p.plot_input(X1d, 'red', '1D (x2 = 0)')
-    p.plot_input(Xgen, 'green', '2D')
-    plt.title('Perceptron Separator for 2D data')
-    plt.xlabel("x1")
-    plt.ylabel("x2")
-    # plt.legend(loc="upper left")
-    plt.show()
+        fig1 = plt.figure()
+        plt.scatter(x_vals1, y_vals1, color='red', label='1 class')
+        plt.scatter(x_vals2, y_vals2, color='blue', label='2 class')
+        plt.title("Multiclass Perceptron Visualization on 2 Features")
+        plt.legend()
+
+    def plot_input(self, Xin, T):
+        x_vals1 = []
+        y_vals1 = []
+        x_vals2 = []
+        y_vals2 = []
+        for ndx,point in enumerate(Xin):
+            if ndx+1 == T: break
+            if self.Yin[point[0]] == 1:
+                x_vals1.append(0)
+                y_vals1.append(point[1])
+            elif self.Yin[point[0]] == -1:
+                x_vals2.append(0)
+                y_vals2.append(point[1])
+        fig2 = plt.figure()
+        plt.scatter(x_vals1, y_vals1, color='red', label='1 class')
+        plt.scatter(x_vals2, y_vals2, color='blue', label='-1 class')
+        plt.title("Binary Classification Perceptron Visualization")
+        plt.legend()

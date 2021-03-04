@@ -13,39 +13,54 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from perceptron import Perceptron
-from svm import SVM
+from knn import KNN
 
-class Binary:
+from sklearn.datasets import load_svmlight_file
+import scipy.sparse
 
-    def __init__(self):
-        self.file_name = 'data/a4a.txt'
-        self.yn = []
+class Data:
+
+    def __init__(self, datapath):
+        self.file_name = datapath
+        self.xn, self.yn = load_svmlight_file(self.file_name)
+
+        cx = scipy.sparse.coo_matrix(self.xn)
         self.xn = []
-        
-        line = []
-        with open(self.file_name, 'r') as f:
-            self.data = f.readlines()
-            for x in self.data:
-                data = x.split(' ')
-                self.yn.append(x[0]+x[1])
-                line = []
-                for point in data:
-                    if ':' in point:
-                        line.append(point.split(':'))
-                self.xn.append(line)
-    
+        for i,j,v in zip(cx.row, cx.col, cx.data):
+            self.xn.append((i,j,v))
 
 if __name__ == "__main__":
-    Bin = Binary()
+    path1 = 'data/a4a.txt'
+    path2 = 'data/iris.scale.txt'
+    path3 = 'data/a4a_testing.txt'
 
-    Svm = SVM(Bin.xn, Bin.yn)
-    weights = Svm.svm(0.4, 100)
-    Svm.plot_input(Bin.xn[0:60])
-    Svm.plot_separator(weights)
+    dat1 = Data(path1)
+    Perc1 = Perceptron(dat1.xn, dat1.yn)
+    weights1 = Perc1.perceptron(400)
+    Perc1.plot_input(dat1.xn, 400)
+    Perc1.plot_separator1(weights1)
 
-    # Perc = Perceptron(Bin.xn, Bin.yi)
-    # weights = Perc.perceptron()
-    # Perc.plot_input(Bin.xn[0:1])
-    # Perc.plot_separator(weights)
+    dat2 = Data(path2)
+    Perc2 = Perceptron(dat2.xn, dat2.yn)
+    weights2 = Perc2.perceptron2(400)
+    Perc2.plot_input2(dat2.xn, 400)
+    Perc2.plot_separator2(weights2)
+
+    test_dat = Data(path3)
+    Knn1 = KNN(dat1.xn, dat1.yn)
+    reference_sample = dat1.xn[(7*14):(8*14)+14]
+    Knn1.plot_input1(reference_sample, 28)
+    test_point = test_dat.xn[8*14 + 8]
+    tst_pnt = test_point[1]
+    print("test point: ", test_point)
+    Knn1.knn(reference_sample, tst_pnt, k=3)
+    
+    Knn2 = KNN(dat2.xn, dat2.yn)
+    reference_sample = dat2.xn[0:400]
+    Knn2.plot_input2(reference_sample, 400)
+    test_point = (dat2.xn[4*10], dat2.xn[4*10 + 1])
+    tst_point = [test_point[0][2],test_point[1][2]]
+    print("test point: ", tst_point)
+    Knn2.knn2(reference_sample, tst_point, k=3)
 
     plt.show()
