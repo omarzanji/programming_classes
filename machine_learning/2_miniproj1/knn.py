@@ -35,8 +35,8 @@ class KNN:
         dist1 = []
         dist2 = []
         for ndx in range(13):
-            dist1.append( [float(np.sqrt((test_point-y_vals1[ndx])**2)), ndx] )
-            dist2.append( [float(np.sqrt((test_point-y_vals2[ndx])**2)), ndx] )
+            dist1.append( [float(np.abs((test_point-y_vals1[ndx]))), ndx] )
+            dist2.append( [float(np.abs((test_point-y_vals2[ndx]))), ndx] )
         dist1 = np.array(dist1)
         dist1 = np.sort(dist1, 0)
         dist2 = np.array(dist2)
