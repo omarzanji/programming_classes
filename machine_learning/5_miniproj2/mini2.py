@@ -16,7 +16,8 @@ from sklearn.metrics import confusion_matrix
 from layers import layer_dense
 from layers import activation_relu
 from layers import activation_softmax
-from layers import loss_categorical_cross_entropy
+from layers import activation_softmax_loss_categorical_cross_entropy
+from layers import optimizer_sgd
 
 import matplotlib.pyplot as plt
 
@@ -24,15 +25,16 @@ import matplotlib.pyplot as plt
 from perceptron import Perceptron
 
 if __name__ == "__main__":
-    # x, y = load_svmlight_file('mnist.scale')
-    # x = x.toarray()
-    # y = y.astype(int)
+    x, y = load_svmlight_file('mnist.scale')
+    x = x.toarray()
+    y = y.astype(int)
 
-    # X, X_test, Y, Y_test = train_test_split(x,y,test_size=0.90)
+    X, X_test, Y, Y_test = train_test_split(x,y,test_size=0.70)
 
-    X = [[2,1],[3,1],[3,2],[4,1],[4,2],[5,1],[5,2],[6,1],[1,4],[1,3],[2,4],[2,3],[3,4],[3,5],[2,5],[1,5]]
-    Y = [-1,-1,-1,-1,-1,-1,-1,-1,1,1,1,1,1,1,1,1]
-    num_classes = 3
+    # X = [[2,1],[3,1],[3,2],[4,1],[4,2],[5,1],[5,2],[6,1],[1,4],[1,3],[2,4],[2,3],[3,4],[3,5],[2,5],[1,5]]
+    # Y = [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1]
+    num_classes = 10
+    
     # kernel perceptron
     # P1 = Perceptron(X, Y)
     # print("training, please wait...")
@@ -45,51 +47,39 @@ if __name__ == "__main__":
     L1 = layer_dense(len(X[0]), neurons)
     activation1 = activation_relu()
     L2 = layer_dense(neurons, num_classes)
-    activation2 = activation_softmax()
+    # combine output layer softmax activation with loss function
+    activation2 = activation_softmax_loss_categorical_cross_entropy()
 
-    # loss function
-    loss_func = loss_categorical_cross_entropy()
+    # optimizer
+    optimizer = optimizer_sgd()
 
-    # initialize weights and biases + init lowest_loss
-    lowest_loss = 9999999
-    best_L1_weights = L1.weights.copy()
-    best_L1_biases = L1.biases.copy()
-    best_L2_weights = L2.weights.copy()
-    best_L2_biases = L2.biases.copy()
-
-    T = 10000
+    T = 100
     for itr in range(T):
-        L1.weights += 0.05 * np.random.randn(len(X[0]),neurons)
-        L1.biases += 0.05 * np.random.randn(1,neurons)
-        L2.weights += 0.05 * np.random.randn(neurons,num_classes)
-        L2.biases += 0.05 * np.random.randn(1,num_classes)
-
         # forward pass
         L1.forward(X)
         activation1.forward(L1.output)
         L2.forward(activation1.output)
-        activation2.forward(L2.output)
+        loss = activation2.forward(L2.output, Y)
 
-        # calc loss
-        loss = loss_func.calculate(activation2.output, Y)
 
         # Calculate accuracy from output of activation2 and targets
         # calculate values along first axis
         predictions = np.argmax(activation2.output, axis=1)
+        if len(np.array(Y).shape) == 2:
+            Y = np.argmax(Y, axis=1)
         accuracy = np.mean(predictions == Y)
 
-        if loss < lowest_loss:
-            print('New set of weights found, iteration:', itr,
-                'loss:', loss, 'acc:', accuracy)
-            best_L1_weights = L1.weights.copy()
-            best_L1_biases = L1.biases.copy()
-            best_L2_weights = L2.weights.copy()
-            best_L2_biases = L2.biases.copy()
-            lowest_loss = loss
+        if not T % 100:
+            print(f'epoch: {itr}, ' +
+            f'acc: {accuracy:.3f}, ' +
+            f'loss: {loss:.3f}')
+        
+        # backward pass
+        activation2.backward(activation2.output, Y)
+        L2.backward(activation2.dinputs)
+        activation1.backward(L2.dinputs)
+        L1.backward(activation1.dinputs)
 
-        # Revert weights and biases
-        else:
-            L1.weights = best_L1_weights.copy()
-            L1.biases = best_L1_biases.copy()
-            L2.weights = best_L2_weights.copy()
-            L2.biases = best_L2_biases.copy()
+        # update weights and biases
+        optimizer.update_params(L1)
+        optimizer.update_params(L2)
