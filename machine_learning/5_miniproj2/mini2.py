@@ -25,15 +25,15 @@ import matplotlib.pyplot as plt
 from perceptron import Perceptron
 
 if __name__ == "__main__":
-    x, y = load_svmlight_file('mnist.scale')
-    x = x.toarray()
-    y = y.astype(int)
+    # x, y = load_svmlight_file('mnist.scale')
+    # x = x.toarray()
+    # y = y.astype(int)
 
-    X, X_test, Y, Y_test = train_test_split(x,y,test_size=0.70)
+    # X, X_test, Y, Y_test = train_test_split(x,y,test_size=0.70)
 
-    # X = [[2,1],[3,1],[3,2],[4,1],[4,2],[5,1],[5,2],[6,1],[1,4],[1,3],[2,4],[2,3],[3,4],[3,5],[2,5],[1,5]]
-    # Y = [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1]
-    num_classes = 10
+    X = [[2,1],[3,1],[3,2],[4,1],[4,2],[5,1],[5,2],[6,1],[1,4],[1,3],[2,4],[2,3],[3,4],[3,5],[2,5],[1,5]]
+    Y = [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1]
+    num_classes = 2
     
     # kernel perceptron
     # P1 = Perceptron(X, Y)
@@ -83,3 +83,5 @@ if __name__ == "__main__":
         # update weights and biases
         optimizer.update_params(L1)
         optimizer.update_params(L2)
+    print('predictions: ')
+    print(predictions)
