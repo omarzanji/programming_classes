@@ -18,9 +18,6 @@ def create_goal_state():
            [16,17,18,19,20]]
     return arr
 
-#def a_star_search(init, goal):
-
-
 if __name__ == "__main__":
     init = create_state_space()
     goal = create_goal_state()
