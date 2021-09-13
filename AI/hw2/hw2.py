@@ -1,3 +1,7 @@
+'''
+Solving puzzle using A* by hand. 
+'''
+
 def create_state_space():
     arr = [[2,3,7,4,5],
            [1,0,11,0,8],
