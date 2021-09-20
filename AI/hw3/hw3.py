@@ -1,9 +1,9 @@
 """
 author: Omar Barazanji
-description: N-Queens Solver using Hill Climbing and Simulated Annealing.
-date: 9/15/2020
-class: COMP 5660 (Auburn University)
-sources: Geeksforgeeks, and my course textbook.
+description: N-Queens Solver using Hill Climbing.
+date: 9/21/2021
+class: COMP 6600 (Auburn University)
+sources: Geeksforgeeks and university course textbook.
 """
 
 import random
@@ -174,37 +174,6 @@ class Board:
         for i,x in enumerate(temp_state):
             self.neighbor_state[i] = x
         self.neighbor_board = self.generate_board(self.neighbor_state)
-
-    def simulated_annealing(self,T):
-        N = self.N
-        t = T
-
-        # initialize neighbor to current state
-        self.neighbor_state = self.state.copy()
-        self.neighbor_board = self.generate_board(self.neighbor_state)
-
-        while(t > 0):
-            t *= 0.9
-            
-            self.get_neighbor()
-            next_state = self.get_score(self.neighbor_board, self.neighbor_state)
-            current = self.get_score(self.board, self.state)
-            delta = next_state - current
-            if delta < 0:
-                # print("Current Score: %d" % next_state)
-                self.state = self.neighbor_state.copy()
-                self.board = self.generate_board(self.state)
-                if next_state == 0:
-                    self.state = self.neighbor_state.copy()
-                    self.board = self.generate_board(self.state)
-                    print("solution: ")
-                    self.print_board(self.board)
-                    break
-            elif random.uniform(0,1) < exp(-delta/t):
-                self.get_random_neighbor()
-                self.state = self.neighbor_state.copy()
-                self.board = self.generate_board(self.state)
-
             
      
 if __name__ == "__main__":
@@ -229,13 +198,4 @@ if __name__ == "__main__":
     Board.board = prob_board
     Board.state = prob_state
 
-    print("")
-    print("Simulated Annealing: ")
-    print("solving... please be patient!")
-    print("")
 
-    annealiing_time0 = time.perf_counter()
-    Board.simulated_annealing(500)
-    annealiing_time1 = time.perf_counter()
-    print("Simulated Annealing Time: %d seconds" % (annealiing_time1-annealiing_time0))
-    print("")
