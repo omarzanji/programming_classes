@@ -1,113 +1,244 @@
 """
 author: Omar Barazanji
-description: Hierarchical Clustering algorithm.
-date: 9/21/2020
-class: COMP 5660 (Auburn University)
+description: N-Queens Solver using Simulated Annealing.
+date: 9/28/2021
+class: COMP 6600 (Auburn University)
+sources: University course textbook.
 """
 
-import numpy as np
-from matplotlib import pyplot as plt
+import random
+import time
+from math import exp
 
-class Set:
-    def __init__(self, set, name):
-        self.set = set
-        self.name = name
-        self.clusters = []
+# State is a 1D array, length N, that for each index/column, i, it tells 
+# us what row to place the queen.
 
-    def show_plot(self):
-        fig1 = plt.figure()
-        plt.scatter(self.set[:,0], self.set[:,1])
-        plt.title("Scatter Plot of Set %s" % self.name)
+class Board:
+    def __init__(self, N):
+        self.N = N
+        self.get_neighbor_clock = 0
+        self.score_clock = 0
+        self.get_score_count = 0
 
-    def show_cluster(self):
-        colors = ['blue', 'red', 'green', 'black']
-        fig2 = plt.figure()
-        for i,x in enumerate(self.clusters):
-            points = x[0]
-            x = []
-            y = []
-            for point in points:
-                x.append(point[0])
-                y.append(point[1])
-            plt.scatter(x,y,color='%s' % colors[i],label='Cluster %d' % i)
-        plt.title('Hierarchical Clustering on Set %s' % self.name)
-        plt.legend()
+    def generate(self):
+        random.seed()
+        N = self.N
+        self.board = [[0]*N for x in range(N)]
+        self.state = [0]*N
+        for i in range(N):
+            self.state[i] = random.randint(0,self.N-1)
+            self.board[self.state[i]][i] = 1
 
-    def init_clusters(self):
-        for x in self.set:
-            self.clusters.append([[(x[0],x[1])],0])
+    def generate_board(self, state):
+        N = self.N
+        ret_board = [[0]*N for x in range(N)]
+        for i in range(N):
+            ret_board[state[i]][i] = 1
+        return ret_board
 
-    def hier_cluster(self, k):
-        self.init_clusters()
-        while len(self.clusters) > k:
-            best_delta = 9999
-            best_point1 = self.clusters[0][0]
-            best_point2 = self.clusters[1][0]
-            best_ndx1 = 0
-            best_ndx2 = 1
-            for x in range(len(self.clusters)):
-                for y in range(len(self.clusters)):
-                    if y == x: continue
-                    else:
-                        point1 = self.clusters[x][0]
-                        point2 = self.clusters[y][0]
+    def print_board(self, board):
+        for x in board:
+            print(x)
 
-                        x_point1 = []
-                        y_point1 = []
-
-                        for i in point1:
-                            x_point1.append(i[0])
-                            y_point1.append(i[1])
-
-                        x_point2 = []
-                        y_point2 = []
-                        for i in point2:
-                            x_point2.append(i[0])
-                            y_point2.append(i[1])
-
-                        # old method:
-                        # x_point1_avg = np.average(x_point1)
-                        # y_point1_avg = np.average(y_point1)
-                        # x_point2_avg = np.average(x_point2)
-                        # y_point2_avg = np.average(y_point2)
-                        # del1 = (x_point1_avg-x_point2_avg)**2
-                        # del2 = (y_point1_avg-y_point2_avg)**2
-                        # delta = np.sqrt(del1+del2)
-
-                        sub_delta_best = 9999
-                        for i in range(len(point1)):
-                            for j in range(len(point2)):
-                                delx = (x_point1[i]-x_point2[j])**2
-                                dely = (y_point1[i]-y_point2[j])**2
-                                sub_delta = np.sqrt(delx+dely)
-                                if sub_delta <= sub_delta_best:
-                                    sub_delta_best = sub_delta
-                    
-                        delta = sub_delta_best
-
-                        if delta <= best_delta:
-                            best_delta = delta
-                            best_point1 = self.clusters[x]
-                            best_point2 = self.clusters[y]
-                            best_ndx1 = x
-                            best_ndx2 = y
-
-            temp_point_list = []
-            temp_point_list = self.clusters[best_ndx1][0] + self.clusters[best_ndx2][0]
-            self.clusters.remove(best_point1)
-            self.clusters.remove(best_point2)
-            self.clusters.append([temp_point_list,best_delta])
+    def get_score(self, board, state):
+        N = self.N
+        ticks = 0 # ticks are number of queens that can attack each other
+        for i in range(N):
             
+            # checking left and right
+            row = state[i]
+            col = i
+            hits = board[row].count(1)
+            if hits > 1:
+                ticks += hits-1
+            
+            # checking up and down
+            row = state[i]
+            col = i
+            hits = [col[i] for col in board].count(1)
+            if hits > 1:
+                ticks += hits-1
 
+            # checking diagonally left
+            row = state[i]
+            col = i
+            while row > 0 and col > 0:
+                row -= 1
+                col -= 1
+                if board[row][col] == 1:
+                    # print("tick d left")
+                    ticks += 1
+
+            # checking diagonally up right
+            row = state[i]
+            col = i
+            while row > 0 and col < N-1:
+                row -= 1
+                col += 1
+                if board[row][col] == 1:
+                    # print("tick d right")
+                    ticks += 1
+            
+            # checking diagonally down right
+            row = state[i]
+            col = i
+            while row < N-1 and col < N-1:
+                row += 1
+                col += 1
+                if board[row][col] == 1:
+                    # print("tick dd right")
+                    ticks += 1
+
+            # checking diagonally down left
+            row = state[i]
+            col = i
+            while row < N-1 and col > 0:
+                row += 1
+                col -= 1
+                if board[row][col] == 1:
+                    # print("tick dd l")
+                    ticks += 1
+
+        return ticks
+
+    def get_neighbor(self):
+        N = self.N
+        optimal_state = self.neighbor_state.copy()
+        optimal_board = self.generate_board(optimal_state)
+        optimal_score = self.get_score(optimal_board, optimal_state)
+
+        temp_state = self.neighbor_state.copy()
+        temp_board = self.generate_board(temp_state)
+
+        # iterating through all possible neighbors
+        for x in range(N):
+            for y in range (N):
+                if y != self.neighbor_state[x]:
+
+                    # creating temp board and state
+                    temp_state[x] = y
+                    temp_board[temp_state[x]][x] = 1
+                    temp_board[self.neighbor_state[x]][x] = 0
+
+                    temp_score = self.get_score(temp_board, temp_state)
+
+                    if temp_score <= optimal_score:
+                        optimal_score = temp_score
+                        optimal_state = temp_state.copy()
+                        optimal_board = self.generate_board(optimal_state)
+                    
+                    # putting temp board back to current state for next iteration
+                    temp_board[temp_state[x]][x] = 0
+                    temp_state[x] = self.neighbor_state[x]
+                    temp_board[self.neighbor_state[x]][x] = 1
+
+        self.neighbor_state = optimal_state.copy()
+        self.neighbor_board = self.generate_board(self.neighbor_state)
+
+    def hill_climbing(self):
+        N = self.N
+
+        # initialize neighbor to current state
+        self.neighbor_state = self.state.copy()
+        self.neighbor_board = self.generate_board(self.neighbor_state)
+
+
+        while(True):
+
+            # Always set current state to neighbor's because "get_neighbor"
+            # returns local optimas.
+            self.state = self.neighbor_state.copy()
+            self.board = self.generate_board(self.state)
+            
+            self.get_neighbor()
+
+            if self.state == self.neighbor_state:
+                print("solution: ")
+                self.print_board(self.board)
+                break
+
+            if self.get_score(self.board, self.state) == self.get_score(self.neighbor_board, self.neighbor_state):
+                self.neighbor_state[random.randint(0, N-1)] = random.randint(0, N-1)
+                self.neighbor_board = self.generate_board(self.neighbor_state)
+
+    def get_random_neighbor(self):
+        N = self.N
+        temp_state = [0]*N
+        while(True):
+            for i in range(N):
+                temp_state[i] = random.randint(0,N-1)
+            if temp_state != self.state:
+                break
+        temp_board = self.generate_board(temp_state)
+        self.neighbor_state = [0]*N
+        for i,x in enumerate(temp_state):
+            self.neighbor_state[i] = x
+        self.neighbor_board = self.generate_board(self.neighbor_state)
+
+    def simulated_annealing(self,T):
+        N = self.N
+        t = T
+
+        # initialize neighbor to current state
+        self.neighbor_state = self.state.copy()
+        self.neighbor_board = self.generate_board(self.neighbor_state)
+
+        while(t > 0):
+            t *= 0.9
+            
+            self.get_neighbor()
+            next_state = self.get_score(self.neighbor_board, self.neighbor_state)
+            current = self.get_score(self.board, self.state)
+            delta = next_state - current
+            if delta < 0:
+                # print("Current Score: %d" % next_state)
+                self.state = self.neighbor_state.copy()
+                self.board = self.generate_board(self.state)
+                if next_state == 0:
+                    self.state = self.neighbor_state.copy()
+                    self.board = self.generate_board(self.state)
+                    print("solution: ")
+                    self.print_board(self.board)
+                    break
+            elif random.uniform(0,1) < exp(-delta/t):
+                self.get_random_neighbor()
+                self.state = self.neighbor_state.copy()
+                self.board = self.generate_board(self.state)
+
+            
+     
 if __name__ == "__main__":
-    A = np.loadtxt("A.txt")
-    B = np.loadtxt("B.txt")
+    Board = Board(25)
+    Board.generate()
 
-    setA = Set(A, 'A')
-    setB = Set(B, 'B')
+    # save problem board and state
+    prob_board = Board.board
+    prob_state = Board.state
 
-    print('Calculating! Please wait...')
-    setB.hier_cluster(2)
-    setB.show_plot()
-    setB.show_cluster()
-    plt.show()
+    print("")
+    print("Problem board:")
+    Board.print_board(Board.board)
+    print("")
+    print("solving... please be patient!")
+    print("")
+
+    hill_time0 = time.perf_counter()
+    Board.hill_climbing()
+    hill_time1 = time.perf_counter()
+    print("Hill Climbing Time: %d seconds" % (hill_time1-hill_time0))
+    print("")
+
+    # reset board to original problem board and state
+    Board.board = prob_board
+    Board.state = prob_state
+
+    print("")
+    print("Simulated Annealing: ")
+    print("solving... please be patient!")
+    print("")
+
+    annealiing_time0 = time.perf_counter()
+    Board.simulated_annealing(T=500)
+    annealiing_time1 = time.perf_counter()
+    print("Simulated Annealing Time: %d seconds" % (annealiing_time1-annealiing_time0))
+    print("")
