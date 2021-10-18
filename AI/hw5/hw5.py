@@ -1,8 +1,8 @@
 """
 author: Omar Barazanji
 description: Hierarchical Clustering algorithm.
-date: 9/21/2020
-class: COMP 5660 (Auburn University)
+date: 10/19/2021
+class: COMP 660 (Auburn University)
 """
 
 import numpy as np
