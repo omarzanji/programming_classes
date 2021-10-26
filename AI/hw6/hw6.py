@@ -1,8 +1,8 @@
 """
 author: Omar Barazanji
 description: K-means Clustering algorithm.
-date: 10/13/2020
-class: COMP 5660 (Auburn University)
+date: 10/26/2021
+class: COMP 6600 (Auburn University)
 """
 
 import numpy as np
@@ -59,8 +59,9 @@ class Set:
                 del2 = (y_vals[i]-avg_y)**2
                 delta = np.sqrt(del1+del2)
                 sum_delta += delta
+            print(S)
             S += sum_delta
-        return S
+        return S/len(self.clusters)
 
     def k_means(self, k):
         self.init_clusters()
