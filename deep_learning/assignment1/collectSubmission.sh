@@ -38,16 +38,4 @@ rm -f ${ZIP_FILENAME}
 zip -r ${ZIP_FILENAME} . -x "*.git*" "*cs231n/datasets*" "*.ipynb_checkpoints*" "*README.md" "collectSubmission.sh" "*requirements.txt" "*__pycache__*" ".env/*" > assignment_zip.log
 echo ""
 
-echo -e "${C_BLD}### Submitting to myth ###${C_E}"
-echo "Type in your Stanford student ID (alphanumeric, *not* the 8-digit ID):"
-read -p "Student ID: " SUID
-echo ""
 
-echo -e "${C_BLD}### Copying to ${SUID}@myth.stanford.edu:${REMOTE_DIR} ###${C_E}"
-echo -e "${C_G}Note: if myth is under heavy use, this may hang: If this happens, rerun the script.${C_E}"
-FILES="${FILES} ${LOCAL_DIR}/${ZIP_FILENAME}"
-rsync -avP ${FILES} ${SUID}@myth.stanford.edu:${REMOTE_DIR}
-echo ""
-
-echo -e "${C_BLD}### Running remote submission script from ${SUID}@myth.stanford.edu:${REMOTE_DIR} ###${C_E}"
-ssh ${SUID}@myth.stanford.edu "cd ${REMOTE_DIR} && /afs/ir/class/cs231n/grading/submit ${ASSIGNMENT_NO} ${SUID} ${ZIP_FILENAME} && exit"
